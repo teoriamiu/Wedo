@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WEDO – Calculadora Nutricional</title>
+
+  <!-- Estilos -->
+  <style>
+    /* --- fondo emoji sándwich --- */
+    html,body{height:100%;margin:0}
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      background:#000;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ctext y='50%25' x='50%25' dominant-baseline='middle' text-anchor='middle' font-size='40'%3E%F0%9F%A5%9E%3C/text%3E%3C/svg%3E");
+      background-repeat:repeat;
+      background-size:60px 60px;
+      display:flex;align-items:center;justify-content:center;
+      color:orange;
+    }
+    .card{
+      background:#ffffff20;
+      backdrop-filter:blur(4px);
+      padding:2rem 3rem;
+      border-radius:1rem;
+      box-shadow:0 4px 12px rgba(0,0,0,.3);
+      width:min(700px,90%);
+    }
+    input,button,select,textarea{
+      background:#000;border:1px solid orange;color:orange;
+      padding:.4rem .6rem;border-radius:4px;font-family:inherit
+    }
+    button{cursor:pointer}
+    ul{list-style:none;padding:0;margin:.5rem 0;max-height:120px;overflow:auto}
+    li{margin:.2rem 0;padding:.2rem;background:#ffffff10;border-radius:4px}
+    .delete{float:right;border:none;background:none;color:orange;font-size:.8rem}
+    pre{white-space:pre-wrap;background:#000;padding:.5rem;border:1px solid orange;border-radius:4px;max-height:260px;overflow:auto}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 style="margin-top:0">WEDO</h1>
+
+    <label>Ingrese alimento (ej: <em>100g arroz</em>):</label><br>
+    <input id="txt" placeholder="100g arroz">
+    <button id="add">Agregar</button>
+
+    <h3>Alimentos agregados:</h3>
+    <ul id="list"></ul>
+
+    <button id="delAll" style="margin-bottom:.5rem">Vaciar lista</button>
+
+    <h3>Totales nutricionales + VDR:</h3>
+    <pre id="out"></pre>
+  </div>
+
+<script>
+/* --- clave API USDA (queda pública) --- */
+const API_KEY = "CG2yX4SYvLy4rHv2aUu5nsuUgCIMNJdRPpdOS6Jj";
+
+/* traducciones y VDR (mismos que en tu script) */
+const traducciones = {/*...*/};
+const VDR = {/*... los mismos pares nombre:valor ...*/};
+
+function t(n){return traducciones[n]||n}
+
+/* vars de estado */
+const alimentos=[];      // {desc, gramos, nutrientes:{n:[val,unit]} }
+
+const txt = document.getElementById("txt"),
+      add = document.getElementById("add"),
+      list= document.getElementById("list"),
+      out = document.getElementById("out"),
+      delAll=document.getElementById("delAll");
+
+/* helpers */
+const parseEntrada = str=>{
+  const m=str.trim().match(/^(\d+)\s*g\s*(.+)$/i);
+  return m ? [parseInt(m[1]),m[2]] : [100,str.trim()];
+};
+const apiSearch = async q=>{
+  const r = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(q)}&api_key=${API_KEY}`);
+  const j = await r.json();
+  return j.foods?.[0];
+};
+const apiFood = async id=>{
+  const r=await fetch(`https://api.nal.usda.gov/fdc/v1/food/${id}?api_key=${API_KEY}`);
+  return await r.json();
+};
+
+/* agregar alimento */
+add.onclick = async ()=>{
+  const [g,raw]=parseEntrada(txt.value);
+  if(!raw){alert("Ingresa un alimento");return}
+  add.disabled=true;
+  try{
+    const food=await apiSearch(raw);
+    if(!food){alert("Alimento no encontrado");return}
+    const data=await apiFood(food.fdcId);
+    const nut={};
+    data.foodNutrients.forEach(n=>{
+      if(n.amount!=null) nut[n.nutrient.name]=[n.amount*(g/100),n.nutrient.unitName];
+    });
+    const item={desc:`${g}g ${food.description}`,gramos:g,nutrientes:nut};
+    alimentos.push(item);
+    renderList();
+    calcTotales();
+  }catch(e){alert("Error al consultar la API");console.log(e)}
+  finally{add.disabled=false;txt.value="";txt.focus();}
+};
+
+/* renderizar lista */
+function renderList(){
+  list.innerHTML="";
+  alimentos.forEach((a,i)=>{
+    const li=document.createElement("li");
+    li.textContent=a.desc;
+    const btn=document.createElement("button");
+    btn.textContent="✕";btn.className="delete";
+    btn.onclick=()=>{alimentos.splice(i,1);renderList();calcTotales()};
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+}
+
+/* calcular y mostrar totales */
+function calcTotales(){
+  const tot={};
+  alimentos.forEach(a=>{
+    for(const n in a.nutrientes){
+      const [v,u]=a.nutrientes[n];
+      if(!tot[n]) tot[n]=[0,u];
+      tot[n][0]+=v;
+    }
+  });
+  let txt="";
+  Object.keys(tot).sort().forEach(n=>{
+    const [v,u]=tot[n];
+    txt+=`${t(n)}: ${v.toFixed(2)} ${u}`;
+    if(VDR[n]) txt+=` | ${(v/VDR[n]*100).toFixed(1)}% VDR`;
+    txt+="\n";
+  });
+  out.textContent=txt||"(vacío)";
+}
+
+/* vaciar lista */
+delAll.onclick=()=>{alimentos.length=0;renderList();calcTotales();};
+
+/* traducciones y VDR (copiados de tu código) */
+Object.assign(traducciones,{
+ "Energy":"Energía","Protein":"Proteínas","Total lipid (fat)":"Grasas totales",
+ "Carbohydrate, by difference":"Carbohidratos","Fiber, total dietary":"Fibra",
+ "Sugars, total including NLEA":"Azúcares","Calcium, Ca":"Calcio","Iron, Fe":"Hierro",
+ "Magnesium, Mg":"Magnesio","Phosphorus, P":"Fósforo","Potassium, K":"Potasio",
+ "Sodium, Na":"Sodio","Zinc, Zn":"Zinc","Vitamin C, total ascorbic acid":"Vitamina C",
+ "Thiamin":"Tiamina (B1)","Riboflavin":"Riboflavina (B2)","Niacin":"Niacina (B3)",
+ "Vitamin B-6":"Vitamina B6","Folate, total":"Folato (B9)","Vitamin B-12":"Vitamina B12",
+ "Vitamin A, RAE":"Vitamina A","Vitamin E (alpha-tocopherol)":"Vitamina E",
+ "Vitamin D (D2 + D3)":"Vitamina D","Vitamin K (phylloquinone)":"Vitamina K",
+ "Cholesterol":"Colesterol","Fatty acids, total saturated":"Grasas saturadas",
+ "Fatty acids, total monounsaturated":"Grasas monoinsaturadas",
+ "Fatty acids, total polyunsaturated":"Grasas poliinsaturadas","Caffeine":"Cafeína"
+});
+Object.assign(VDR,{
+ "Energy":2000,"Protein":50,"Total lipid (fat)":70,"Carbohydrate, by difference":310,
+ "Fiber, total dietary":30,"Sugars, total":50,"Calcium, Ca":1000,"Iron, Fe":18,
+ "Potassium, K":4700,"Sodium, Na":2300,"Vitamin C, total ascorbic acid":90,
+ "Vitamin A, RAE":900,"Vitamin B-12":2.4,"Vitamin D (D2 + D3)":20,"Cholesterol":300
+});
+</script>
+</body>
+</html>
