@@ -181,10 +181,7 @@ const foods=[],cache={},$=id=>document.getElementById(id),[$txt,$add,$list,$out,
 
 
 // Unlock audio
-const biteAudio = document.getElementById('biteAudio');
-window.addEventListener('pointerdown', () => {
-  biteAudio.play().then(_ => biteAudio.pause()).catch(() => {});
-}, { once: true });
+<audio id="biteAudio" src="https://teoriamiu.github.io/Wedo/big-crunch-c-201938.mp3" preload="auto"></audio>
 
 // Sandwich rain
 function spawn() {
