@@ -5,172 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#0a0a0f;
-      --fg:#ffa500;
-      --accent:#ffd700;
-      --glass:rgba(255,255,255,0.14);
-      --radius:1rem;
-    }
-    *,*::before,*::after{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:'Inter',sans-serif;
-    }
-    html,body{
-      width:100%;height:100%;overflow:hidden;
-      background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ctext y='50%25' x='50%25' dominant-baseline='middle' text-anchor='middle' font-size='40'%3E%F0%9F%A5%AA%3C/text%3E%3C/svg%3E") repeat;
-      color:var(--fg);
-      line-height:1.4;
-      font-size:15px;
-    }
-    /* Contenedor principal */
-    .card{
-      position:absolute;
-      top:1rem;left:50%;transform:translateX(-50%);
-      width:95vw;height:calc(100vh - 2rem);
-      background:var(--glass);
-      backdrop-filter:blur(10px);
-      border-radius:var(--radius);
-      padding:1rem;
-      display:flex;flex-direction:column;
-      box-shadow:0 8px 32px rgba(0,0,0,0.4);
-    }
-    h1{
-      margin-bottom:0.5rem;
-      color:var(--accent);
-      text-align:center;
-      font-size:1.8rem;
-      font-weight:700;
-      letter-spacing:0.05rem;
-    }
-    /* Controles */
-    .controls{
-      display:flex;gap:0.6rem;
-      margin-bottom:0.5rem;
-    }
+    :root{--bg:#0a0a0f;--fg:#ffa500;--accent:#ffd700;--glass:rgba(255,255,255,0.14);--radius:1rem}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
+    html,body{width:100%;height:100%;overflow:hidden;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ctext y='50%25' x='50%25' dominant-baseline='middle' text-anchor='middle' font-size='40'%3E%F0%9F%A5%AA%3C/text%3E%3C/svg%3E") repeat;color:var(--fg);line-height:1.4;font-size:15px}
+    .card{position:absolute;top:1rem;left:50%;transform:translateX(-50%);width:95vw;height:calc(100vh-2rem);background:var(--glass);backdrop-filter:blur(10px);border-radius:var(--radius);padding:1.5rem;display:flex;flex-direction:column;gap:.8rem;box-shadow:0 8px 32px rgba(0,0,0,0.4);overflow:hidden}
+    h1{color:var(--accent);text-align:center;font-size:1.8rem;font-weight:700;letter-spacing:.05rem}
+    .controls{display:flex;gap:.6rem}
     .controls input{flex:1 1 auto;min-width:0}
-    input,button{
-      background:var(--bg);
-      border:none;
-      padding:0.85rem 1rem;
-      border-radius:0.7rem;
-      color:inherit;
-      font-size:1rem;
-      box-shadow:
-        inset 2px 2px 4px rgba(0,0,0,0.5),
-        inset -2px -2px 4px rgba(255,255,255,0.1),
-        2px 2px 4px rgba(0,0,0,0.3),
-        -2px -2px 4px rgba(255,255,255,0.1);
-      transition:transform 0.15s,box-shadow 0.15s;
-      outline:none;
-    }
-    button{flex:0 0 auto;font-weight:600;cursor:pointer;}
-    button:active{transform:scale(0.96)}
-    button:disabled{opacity:0.5;cursor:not-allowed}
-    /* Sección lista */
-    .list-section{
-      flex:0 0 35%;
-      display:flex;flex-direction:column;
-      overflow:hidden;
-      margin-bottom:0.5rem;
-    }
-    .list-section h3{
-      margin-bottom:0.3rem;
-      font-size:1rem;
-      font-weight:600;
-    }
-    ul{
-      list-style:none;
-      flex:1 1 auto;
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-      padding-right:0.3rem;
-    }
+    input,button{background:var(--bg);border:none;padding:.85rem 1rem;border-radius:.7rem;color:inherit;font-size:1rem;box-shadow:inset 2px 2px 4px #0008,inset -2px -2px 4px #fff1,2px 2px 4px #0006,-2px -2px 4px #fff1;transition:.15s;outline:none}
+    button{flex:0 0 auto;font-weight:600;cursor:pointer}
+    button:active{transform:scale(.96)}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    ul{list-style:none;flex:0 0 35%;max-height:35%;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:.3rem}
     ul::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
-    li{
-      background:rgba(255,255,255,0.12);
-      padding:0.45rem 0.6rem;
-      margin:0.3rem 0;
-      border-radius:0.7rem;
-      display:flex;justify-content:space-between;align-items:center;
-      font-size:0.92rem;
-      word-break:break-word;
-    }
-    li button{background:none;border:none;color:var(--accent);font-size:1.2rem;padding:0}/* Vaciar lista */
-#delAll{
-  margin-top:0.5rem;
-  align-self:flex-start;
-}
-
-/* Sección resultados */
-.out-section{
-  flex:1 1 auto;
-  display:flex;flex-direction:column;
-  overflow:hidden;
-}
-.out-section h3{
-  margin-bottom:0.3rem;
-  font-size:1rem;
-  font-weight:600;
-}
-pre{
-  flex:1 1 auto;
-  background:var(--bg);
-  border:1px solid var(--fg);
-  border-radius:0.7rem;
-  padding:1rem;
-  font-family:'Courier New',monospace;
-  font-size:0.9rem;
-  overflow:auto;
-  -webkit-overflow-scrolling:touch;
-}
-
-/* Contador emojis */
-#contador{
-  position:fixed;top:0.8rem;right:1rem;
-  background:rgba(0,0,0,0.6);
-  color:var(--accent);
-  padding:0.4rem 0.8rem;
-  font:700 0.9rem 'Courier New',monospace;
-  border:2px solid var(--accent);
-  border-radius:1rem;
-  box-shadow:0 0 8px rgba(0,0,0,0.6);
-  pointer-events:none;
-}
-@keyframes caer{to{transform:translateY(110vh) rotate(1turn);opacity:0}}
-
+    li{background:rgba(255,255,255,.12);padding:.45rem .6rem;margin:.3rem 0;border-radius:.7rem;display:flex;justify-content:space-between;align-items:center;font-size:.92rem;word-break:break-word}
+    li button{background:none;border:none;color:var(--accent);font-size:1.2rem;padding:0}
+    pre{background:var(--bg);border:1px solid var(--fg);border-radius:.7rem;padding:1rem;font-family:'Courier New',monospace;font-size:.9rem;flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch}
+    #contador{position:fixed;top:.8rem;right:1rem;background:rgba(0,0,0,0.6);color:var(--accent);padding:.4rem .8rem;font:700 .9rem 'Courier New',monospace;border:2px solid var(--accent);border-radius:1rem;box-shadow:0 0 8px rgba(0,0,0,0.6);pointer-events:none}
+    @keyframes caer{to{transform:translateY(110vh) rotate(1turn);opacity:0}}
   </style>
 </head>
 <body>
-  <main class="card">
-    <h1>WEDO</h1>
-    <label for="txt">Ingrese alimento <em>(ej: 100g pollo)</em>:</label>
-    <div class="controls">
-      <input id="txt" placeholder="100g pollo" autocomplete="off">
-      <button id="add">Agregar</button>
-    </div>
-    <div class="list-section">
-      <h3>Alimentos agregados:</h3>
-      <ul id="list"></ul>
-      <button id="delAll">Vaciar lista</button>
-    </div><div class="out-section">
+<main class="card">
+  <h1>WEDO</h1>
+  <label for="txt">Ingrese alimento <em>(ej: 100g pollo)</em>:</label>
+  <div class="controls">
+    <input id="txt" placeholder="100g pollo" autocomplete="off">
+    <button id="add">Agregar</button>
+  </div>
+  <h3>Alimentos agregados:</h3>
+  <ul id="list"></ul>
+  <button id="delAll">Vaciar lista</button>
   <h3>Totales nutricionales + %VDR:</h3>
   <pre id="out">(vacío)</pre>
-</div>
-
-  </main>
-  <div id="contador">Sándwiches: 0</div>
-  <audio id="biteAudio" src="https://www.myinstants.com/media/sounds/cartoon-bite.mp3" preload="auto"></audio>
-  <script>
-    const API_KEY = "CG2yX4SYvLy4rHv2aUu5nsuUgCIMNJdRPpdOS6Jj",API_URL = "https://api.nal.usda.gov/fdc/v1";
-const MACROS=["Energy","Protein","Total lipid (fat)","Carbohydrate, by difference"],VIT=["Vitamin D (D2 + D3)","Vitamin A, RAE","Thiamin","Riboflavin","Niacin","Pantothenic acid","Vitamin B-6","Biotin","Folate, total","Vitamin B-12","Vitamin C, total ascorbic acid","Vitamin E (alpha-tocopherol)","Vitamin K (phylloquinone)","Choline, total"],MINER=["Calcium, Ca","Chloride, Cl","Chromium, Cr","Copper, Cu","Iodine, I","Iron, Fe","Magnesium, Mg","Manganese, Mn","Molybdenum, Mo","Phosphorus, P","Potassium, K","Selenium, Se","Sodium, Na","Zinc, Zn"],AG=["PUFA 18:3","PUFA 18:2"],AA=["Isoleucine","Histidine","Leucine","Lysine","Methionine","Phenylalanine","Tryptophan","Threonine","Valine"];
+</main>
+<div id="contador">Sándwiches: 0</div>
+<audio id="biteAudio" src="https://www.myinstants.com/media/sounds/cartoon-bite.mp3" preload="auto"></audio>
+<script>
+  const API_KEY="CG2yX4SYvLy4rHv2aUu5nsuUgCIMNJdRPpdOS6Jj",API_URL="https://api.nal.usda.gov/fdc/v1";
+  const MACROS=["Energy","Protein","Total lipid (fat)","Carbohydrate, by difference"],VIT=["Vitamin D (D2 + D3)","Vitamin A, RAE","Thiamin","Riboflavin","Niacin","Pantothenic acid","Vitamin B-6","Biotin","Folate, total","Vitamin B-12","Vitamin C, total ascorbic acid","Vitamin E (alpha-tocopherol)","Vitamin K (phylloquinone)","Choline, total"],MINER=["Calcium, Ca","Chloride, Cl","Chromium, Cr","Copper, Cu","Iodine, I","Iron, Fe","Magnesium, Mg","Manganese, Mn","Molybdenum, Mo","Phosphorus, P","Potassium, K","Selenium, Se","Sodium, Na","Zinc, Zn"],AG=["PUFA 18:3","PUFA 18:2"],AA=["Isoleucine","Histidine","Leucine","Lysine","Methionine","Phenylalanine","Tryptophan","Threonine","Valine"];
   const GROUP={},ORDER=["Macronutrientes","Vitaminas","Minerales","Ácidos grasos esenciales","Aminoácidos esenciales"];
   [MACROS,VIT,MINER,AG,AA].flat().forEach(x=>GROUP[x]=MACROS.includes(x)?"Macronutrientes":VIT.includes(x)?"Vitaminas":MINER.includes(x)?"Minerales":AG.includes(x)?"Ácidos grasos esenciales":"Aminoácidos esenciales");
   const TRAD={"Energy":"Calorías","Protein":"Proteínas","Total lipid (fat)":"Grasas","Carbohydrate, by difference":"Carbohidratos","Vitamin D (D2 + D3)":"Vitamina D","Vitamin A, RAE":"Vitamina A","Thiamin":"Vit. B1","Riboflavin":"Vit. B2","Niacin":"Vit. B3","Pantothenic acid":"Vit. B5","Vitamin B-6":"Vit. B6","Biotin":"Vit. B7","Folate, total":"Vit. B9","Vitamin B-12":"Vit. B12","Vitamin C, total ascorbic acid":"Vit. C","Vitamin E (alpha-tocopherol)":"Vit. E","Vitamin K (phylloquinone)":"Vit. K","Choline, total":"Colina","Calcium, Ca":"Calcio","Chloride, Cl":"Cloruros","Chromium, Cr":"Cromo","Copper, Cu":"Cobre","Iodine, I":"Yodo","Iron, Fe":"Hierro","Magnesium, Mg":"Magnesio","Manganese, Mn":"Manganeso","Molybdenum, Mo":"Molibdeno","Phosphorus, P":"Fósforo","Potassium, K":"Potasio","Selenium, Se":"Selenio","Sodium, Na":"Sodio","Zinc, Zn":"Zinc","Isoleucine":"Isoleucina","Histidine":"Histidina","Leucine":"Leucina","Lysine":"Lisina","Methionine":"Metionina","Phenylalanine":"Fenilalanina","Tryptophan":"Triptófano","Threonine":"Treonina","Valine":"Valina","PUFA 18:3":"Ác. α-linolénico","PUFA 18:2":"Ác. linoleico"};
   const VDR={"Energy":2000,"Protein":50,"Total lipid (fat)":70,"Carbohydrate, by difference":310,"Vitamin C, total ascorbic acid":90,"Vitamin A, RAE":900,"Vitamin D (D2 + D3)":20,"Calcium, Ca":1000,"Iron, Fe":18,"Potassium, K":4700,"Sodium, Na":2300};
-const foods=[],cache={},$=id=>document.getElementById(id),[$txt,$add,$list,$out,$del]=["txt","add","list","out","delAll"].map($);
+  const foods=[],cache={},$=id=>document.getElementById(id),[$txt,$add,$list,$out,$del]=["txt","add","list","out","delAll"].map($);
   const search=q=>fetch(`${API_URL}/foods/search?query=${encodeURIComponent(q)}&pageSize=1&api_key=${API_KEY}`).then(r=>r.json());
   const getFood=id=>cache[id]??fetch(`${API_URL}/food/${id}?api_key=${API_KEY}`).then(r=>r.json()).then(j=>(cache[id]=j));
   function renderList(){ $list.innerHTML=foods.map((f,i)=>`<li>${f.d}<button data-i=${i}>✕</button></li>`).join(''); }
@@ -178,28 +56,12 @@ const foods=[],cache={},$=id=>document.getElementById(id),[$txt,$add,$list,$out,
   $add.onclick=async()=>{const m=$txt.value.trim().match(/^(\d+)\s*g?\s+(.+)$/i),g=m?+m[1]:100,q=m?m[2]:$txt.value.trim();if(!q)return alert('Ingresa un alimento');$add.disabled=true;try{const res=await search(q),item=res.foods?.[0];if(!item)throw'Sin resultados';const data=await getFood(item.fdcId),n={};data.foodNutrients.forEach(x=>{if(GROUP[x.nutrient.name]&&x.amount!=null)n[x.nutrient.name]=[x.amount,x.nutrient.unitName||'g']});foods.push({d:`${g} g ${data.description.toLowerCase()}`,g,n});renderList();calcTotals()}catch(e){alert(e)}$add.disabled=false;$txt.value=''};
   $list.onclick=e=>{if(e.target.tagName==='BUTTON'){foods.splice(e.target.dataset.i,1);renderList();calcTotals()}};
   $del.onclick=()=>{foods.length=0;renderList();calcTotals()};
-
-
-// Unlock audio
-<audio id="biteAudio" src="https://teoriamiu.github.io/Wedo/big-crunch-c-201938.mp3" preload="auto"></audio>
-
-// Sandwich rain
-function spawn() {
-  const d = document.createElement('div'), gold = Math.random() < .1;
-  d.textContent = '🥪';
-  d.style.cssText = `position:fixed;left:${Math.random()*100}vw;top:-40px;animation:caer 5s linear forwards;z-index:9999;font-size:${gold?40:32}px;${gold?'filter:drop-shadow(0 0 6px var(--accent))':''};user-select:none;cursor:pointer`;
-  d.onclick = () => {
-    biteAudio.currentTime = 0; biteAudio.play().catch(() => {});
-    const c = +$('contador').textContent.split(': ')[1] + (gold ? 5 : 1);
-    $('contador').textContent = `Sándwiches: ${c}`;
-    if (gold) alert('¡Sándwich dorado!');
-    d.remove();
-  };
-  document.body.appendChild(d);
-  setTimeout(() => d.remove(), 5500);
-}
-setInterval(spawn, 650);
-
-  </script>
+  // Unlock audio on first gesture
+  const biteAudio=document.getElementById('biteAudio');
+  window.addEventListener('pointerdown',()=>{biteAudio.play().then(_=>biteAudio.pause()).catch(()=>{})},{once:true});
+  // Sandwich rain
+  function spawn(){const d=document.createElement('div'),gold=Math.random()<.1;d.textContent='🥪';d.style.cssText=`position:fixed;left:${Math.random()*100}vw;top:-40px;font-size:${gold?40:32}px;animation:caer 5s linear forwards;z-index:9999;${gold?'filter:drop-shadow(0 0 6px var(--accent))':''};user-select:none;cursor:pointer`;d.onclick=()=>{biteAudio.currentTime=0;biteAudio.play().catch(()=>{});const count=+$('contador').textContent.split(': ')[1]+(gold?5:1);$('contador').textContent='Sándwiches: '+count; if(gold)alert('¡Sándwich dorado!');d.remove()};document.body.appendChild(d);setTimeout(()=>d.remove(),5500)}
+  setInterval(spawn,650);
+</script>
 </body>
 </html>
