@@ -2,183 +2,80 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>WEDO – Calculadora Nutricional</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <title>WEDO – Sándwich Lluvia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    :root{
-      --bg:#0a0a0f;
-      --fg:#ffa500;
-      --accent:#ffd700;
-      --glass:rgba(255,255,255,0.14);
-      --radius:1rem;
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #111;
+      color: #ffa500;
+      font-family: Arial, sans-serif;
     }
-    *,*::before,*::after{
-      box-sizing:border-box;
-      margin:0;
-      padding:0;
-      font-family:'Inter',sans-serif;
+    @keyframes caer {
+      to { transform: translateY(110vh) rotate(1turn); opacity: 0; }
     }
-    html,body{
-      width:100%;height:100%;overflow:hidden;
-      background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ctext y='50%25' x='50%25' dominant-baseline='middle' text-anchor='middle' font-size='40'%3E%F0%9F%A5%AA%3C/text%3E%3C/svg%3E") repeat;
-      color:var(--fg);
-      line-height:1.4;
-      font-size:15px;
+    #contador {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
     }
-    .card{ /* estilos del contenedor principal */ 
-      position:absolute;
-      top:1rem;left:50%;transform:translateX(-50%);
-      width:95vw;height:calc(100vh - 2rem);
-      background:var(--glass);
-      backdrop-filter:blur(10px);
-      border-radius:var(--radius);
-      padding:1rem;
-      display:flex;flex-direction:column;
-      box-shadow:0 8px 32px rgba(0,0,0,0.4);
-    }
-    h1{
-      margin-bottom:0.5rem;
-      color:var(--accent);
-      text-align:center;
-      font-size:1.8rem;
-      font-weight:700;
-      letter-spacing:0.05rem;
-    }
-    .controls{
-      display:flex;gap:0.6rem;
-      margin-bottom:0.5rem;
-    }
-    .controls input{flex:1 1 auto;min-width:0}
-    input,button{
-      background:var(--bg);
-      border:none;
-      padding:0.85rem 1rem;
-      border-radius:0.7rem;
-      color:inherit;
-      font-size:1rem;
-      box-shadow:
-        inset 2px 2px 4px rgba(0,0,0,0.5),
-        inset -2px -2px 4px rgba(255,255,255,0.1),
-        2px 2px 4px rgba(0,0,0,0.3),
-        -2px -2px 4px rgba(255,255,255,0.1);
-      transition:transform 0.15s,box-shadow 0.15s;
-      outline:none;
-    }
-    button{flex:0 0 auto;font-weight:600;cursor:pointer;}
-    button:active{transform:scale(0.96)}
-    button:disabled{opacity:0.5;cursor:not-allowed}
-    .list-section{
-      flex:0 0 35%;
-      display:flex;flex-direction:column;
-      overflow:hidden;
-      margin-bottom:0.5rem;
-    }
-    .list-section h3{margin-bottom:0.3rem;font-size:1rem;font-weight:600;}
-    ul{
-      list-style:none;
-      flex:1 1 auto;
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-      padding-right:0.3rem;
-    }
-    ul::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
-    li{
-      background:rgba(255,255,255,0.12);
-      padding:0.45rem 0.6rem;
-      margin:0.3rem 0;
-      border-radius:0.7rem;
-      display:flex;justify-content:space-between;align-items:center;
-      font-size:0.92rem;
-      word-break:break-word;
-    }
-    li button{background:none;border:none;color:var(--accent);font-size:1.2rem;padding:0}
-    #delAll{margin-top:0.5rem;align-self:flex-start;}
-    .out-section{
-      flex:1 1 auto;
-      display:flex;flex-direction:column;
-      overflow:hidden;
-    }
-    .out-section h3{margin-bottom:0.3rem;font-size:1rem;font-weight:600;}
-    pre{
-      flex:1 1 auto;
-      background:var(--bg);
-      border:1px solid var(--fg);
-      border-radius:0.7rem;
-      padding:1rem;
-      font-family:'Courier New',monospace;
-      font-size:0.9rem;
-      overflow:auto;
-      -webkit-overflow-scrolling:touch;
-    }
-    #contador{
-      position:fixed;top:0.8rem;right:1rem;
-      background:rgba(0,0,0,0.6);
-      color:var(--accent);
-      padding:0.4rem 0.8rem;
-      font:700 0.9rem 'Courier New',monospace;
-      border:2px solid var(--accent);
-      border-radius:1rem;
-      box-shadow:0 0 8px rgba(0,0,0,0.6);
-      pointer-events:none;
-    }
-    @keyframes caer{to{transform:translateY(110vh) rotate(1turn);opacity:0}}
   </style>
 </head>
-
 <body>
-  <main class="card">
-    <h1>WEDO</h1>
-    <label for="txt">Ingrese alimento <em>(ej: 100g pollo)</em>:</label>
-    <div class="controls">
-      <input id="txt" placeholder="100g pollo" autocomplete="off">
-      <button id="add">Agregar</button>
-    </div>
-    <div class="list-section">
-      <h3>Alimentos agregados:</h3>
-      <ul id="list"></ul>
-      <button id="delAll">Vaciar lista</button>
-    </div>
-    <div class="out-section">
-      <h3>Totales nutricionales + %VDR:</h3>
-      <pre id="out">(vacío)</pre>
-    </div>
-  </main>
 
-  <div id="contador">Sándwiches: 0</div>
+<div id="contador">Sándwiches: 0</div>
 
-  <!-- Aquí el audio de GitHub -->
-  <audio id="biteAudio" preload="auto">
-    <source src="https://raw.githubusercontent.com/teoriamu/Wedo/main/big-crunch-c-20138.mp3" type="audio/mpeg">
-    Tu navegador no soporta audio HTML5.
-  </audio>
+<audio id="biteAudio" preload="auto">
+  <source src="https://raw.githubusercontent.com/teoriamu/Wedo/main/big-crunch-c-20138.mp3" type="audio/mpeg">
+  Tu navegador no soporta audio.
+</audio>
 
-  <script>
-    const $ = id => document.getElementById(id);
-    const biteAudio = $('biteAudio');
+<script>
+const contador = document.getElementById('contador');
+const biteAudio = document.getElementById('biteAudio');
 
-    window.addEventListener('pointerdown', () => {
-      biteAudio.play().then(_ => biteAudio.pause()).catch(() => {});
-    }, { once: true });
+window.addEventListener('pointerdown', () => {
+  biteAudio.play().then(_ => biteAudio.pause()).catch(() => {});
+}, { once: true });
 
-    function spawn() {
-      const d = document.createElement('div'), gold = Math.random() < .1;
-      d.textContent = '🥪';
-      d.style.cssText = `position:fixed;left:${Math.random()*100}vw;top:-40px;animation:caer 5s linear forwards;z-index:9999;font-size:${gold?40:32}px;${gold?'filter:drop-shadow(0 0 6px var(--accent))':''};user-select:none;cursor:pointer`;
-      d.onclick = () => {
-        biteAudio.currentTime = 0; 
-        biteAudio.play().catch(() => {});
-        const c = +$('contador').textContent.split(': ')[1] + (gold ? 5 : 1);
-        $('contador').textContent = `Sándwiches: ${c}`;
-        if (gold) alert('¡Sándwich dorado!');
-        d.remove();
-      };
-      document.body.appendChild(d);
-      setTimeout(() => d.remove(), 5500);
-    }
-    setInterval(spawn, 650);
+function spawnSandwich() {
+  const sandwich = document.createElement('div');
+  const isGold = Math.random() < 0.1;
+  sandwich.textContent = '🥪';
+  sandwich.style.cssText = `
+    position: fixed;
+    left: ${Math.random() * 100}vw;
+    top: -40px;
+    font-size: ${isGold ? 50 : 40}px;
+    animation: caer 5s linear forwards;
+    z-index: 9999;
+    user-select: none;
+    cursor: pointer;
+    ${isGold ? 'filter: drop-shadow(0 0 8px gold);' : ''}
+  `;
+  
+  sandwich.onclick = () => {
+    biteAudio.currentTime = 0;
+    biteAudio.play().catch(() => {});
+    let count = parseInt(contador.textContent.split(': ')[1]);
+    count += isGold ? 5 : 1;
+    contador.textContent = `Sándwiches: ${count}`;
+    sandwich.remove();
+  };
 
-    // (Tu código de la calculadora nutricional seguiría aquí...)
-  </script>
+  document.body.appendChild(sandwich);
+  setTimeout(() => sandwich.remove(), 6000);
+}
+
+setInterval(spawnSandwich, 700);
+
+</script>
+
 </body>
 </html>
